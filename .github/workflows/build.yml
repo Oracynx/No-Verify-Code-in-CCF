@@ -2,18 +2,17 @@ name: Build and Release
 
 on:
   push:
-    branches:
-      - "**"   # 任意分支推送都触发
+    tags:
+      - "*"   # 任何 tag push 都会触发
 
 permissions:
-  contents: write
+  contents: write   # 必须有写权限才能创建 Release
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
@@ -29,17 +28,11 @@ jobs:
       - name: Build (release mode)
         run: bunx esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/index.min.js
 
-      - name: Archive build artifacts
-        run: |
-          mkdir artifacts
-          cp dist/index.js artifacts/
-          cp dist/index.min.js artifacts/
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.sha }}
-          name: Release ${{ github.sha }}
-          files: artifacts/*
+          tag_name: ${{ github.ref_name }}   # 当前推送的 tag
+          name: Release ${{ github.ref_name }}
+          files: dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
