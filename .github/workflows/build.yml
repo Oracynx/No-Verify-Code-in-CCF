@@ -8,24 +8,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: 20
+          bun-version: latest
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install
 
       - name: Build (normal mode)
-        run: npx esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js
+        run: bunx esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js
 
       - name: Build (release mode)
-        run: npx esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/index.min.js
+        run: bunx esbuild src/index.ts --bundle --platform=node --minify --outfile=dist/index.min.js
 
       - name: Archive build artifacts
         run: |
