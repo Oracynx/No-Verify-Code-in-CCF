@@ -5,6 +5,9 @@ on:
     branches:
       - "**"   # 任意分支推送都触发
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
